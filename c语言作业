@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    int id;
+    char name[20];
+    float s1, s2, s3;
+    float sum;
+    float avg;
+} Student;
+
+// 计算总分平均分
+void calcScore(Student *p, int n) {
+    for(int i=0; i<n; i++) {
+        p[i].sum = p[i].s1 + p[i].s2 + p[i].s3;
+        p[i].avg = p[i].sum / 3.0f;
+    }
+}
+
+// 按总分降序排序
+void sortBySum(Student *p, int n) {
+    for(int i=0; i<n-1; i++) {
+        for(int j=0; j<n-1-i; j++) {
+            if(p[j].sum < p[j+1].sum) {
+                Student t = p[j];
+                p[j] = p[j+1];
+                p[j+1] = t;
+            }
+        }
+    }
+}
+
+// 统计及格人数（总分>=180）
+int countPass(Student *p, int n) {
+    int cnt = 0;
+    for(int i=0; i<n; i++) {
+        if(p[i].sum >= 180) cnt++;
+    }
+    return cnt;
+}
+
+void printStu(Student *p, int n) {
+    printf("学号\t姓名\t科目1\t科目2\t科目3\t总分\t平均分\n");
+    for(int i=0; i<n; i++) {
+        printf("%d\t%s\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n",
+               p[i].id, p[i].name, p[i].s1,p[i].s2,p[i].s3,p[i].sum,p[i].avg);
+    }
+}
+
+int main() {
+    int n;
+    printf("输入学生人数：");
+    scanf("%d", &n);
+    Student *stu = (Student*)malloc(n * sizeof(Student));
+    if(!stu) { perror("malloc"); return 1; }
+
+    for(int i=0; i<n; i++) {
+        printf("输入第%d个学生：学号 姓名 s1 s2 s3：",i+1);
+        scanf("%d %s %f %f %f", &stu[i].id, stu[i].name, &stu[i].s1,&stu[i].s2,&stu[i].s3);
+    }
+    calcScore(stu, n);
+    sortBySum(stu, n);
+    printStu(stu, n);
+    printf("及格人数：%d\n", countPass(stu,n));
+
+    free(stu);
+    return 0;
+}
